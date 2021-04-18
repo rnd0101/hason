@@ -6,7 +6,9 @@ import json
 
 
 def println(data, env):
-    print(*[interpret(d, env) for d in data])
+    for d in data:
+        print(interpret(d, env), end="")
+    print()
 
 
 builtin_functions = {
