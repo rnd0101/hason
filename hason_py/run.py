@@ -7,12 +7,13 @@ import json
 
 def println(data, env):
     for d in data:
-        print(interpret(d, env), end="")
-    print()
+        env["builtins"]["_print"](interpret(d, env), end="")
+    env["builtins"]["_print"]()
 
 
 builtin_functions = {
     "print": println,
+    "_print": print,
 }
 
 
@@ -36,7 +37,7 @@ def main(filename):
     with open(filename, 'rb') as json_file:
         contents = json.load(json_file)
     result = interpret(contents, {"builtins": builtin_functions})
-    print(result)
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == '__main__':
