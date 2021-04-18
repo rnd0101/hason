@@ -1,0 +1,13 @@
+*.pyc
+*.pyo
+*.mo
+*~
+*.swp
+*.swo
+*.log
+.idea
+.~lock*
+.DS_Store
+.coverage
+.cache
+.vscode
