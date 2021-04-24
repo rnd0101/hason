@@ -3,28 +3,31 @@
 """
 import argparse
 import json
-
-
-def get_builtin(env, key):
-    return env["builtins"][key]
+import yaml
+from collections import ChainMap
 
 
 def println(data, env):
-    the_print = get_builtin(env, "_print")
+    the_print = env["_print"]
     for d in data:
-        the_print(interpret(d, env), end="")
+        the_print(eval(d, env), end="")
     the_print()
 
 
+def lit(data, env):
+    return data
+
+
 def serialize(data, env):
-    return get_builtin(env, "_json_dumps")(data[0])
+    return env["_json_dumps"](data[0])
 
 
 def deserialize(data, env):
-    return get_builtin(env, "_json_loads")(data[0])
+    return env["_json_loads"](data[0])
 
 
 builtin_functions = {
+    "lit": lit,
     "print": println,
     "_print": print,
     "_json_loads": json.loads,
@@ -34,30 +37,33 @@ builtin_functions = {
 }
 
 
-def interpret_list(data, env):
-    builtins = env.get("builtins", {})
-    func = builtins.get(data[0])
+def apply(func, params, env):
+    func = eval(func, env)   # env.get(data[0])
     if func is not None:
-        return func(data[1:], env)
-    return data
+        return func(params, env)
+    return [func] + params
 
 
-def interpret(data, env):
+def eval(data, env):
     if isinstance(data, list):
-        return interpret_list(data, env)
+        return apply(data[0], data[1:], env)
     return data
 
 
 def interpret_main(data, env):
-    if not isinstance(data, dict) or data.get("") is None:
+    if not isinstance(data, dict):
         return data
-    return interpret(data.get(""), env)
+    func_body = data.get("")
+    if func_body is None:
+        return data   #???
+    new_env = ChainMap(data, env)
+    return eval(func_body, new_env)
 
 
 def main(filename):
     with open(filename, 'rb') as json_file:
         contents = json.load(json_file)
-    result = interpret_main(contents, {"builtins": builtin_functions})
+    result = interpret_main(contents, builtin_functions)
     print(json.dumps(result, indent=2))
 
 
