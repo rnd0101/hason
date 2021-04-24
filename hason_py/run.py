@@ -47,6 +47,8 @@ def apply(func, params, env):
 def eval(data, env):
     if isinstance(data, list):
         return apply(data[0], data[1:], env)
+    if isinstance(data, str):
+        return env.get(data)   # data from variable
     return data
 
 
