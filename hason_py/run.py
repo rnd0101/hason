@@ -34,6 +34,14 @@ def not_(data, env):
     return not _eval(data[0], env)
 
 
+def any_(data, env):
+    return any(_eval(d, env) for d in data)
+
+
+def all_(data, env):
+    return all(_eval(d, env) for d in data)
+
+
 def apply(data, env):
     func, *params = data
     func = _eval(func, env)
@@ -65,6 +73,8 @@ builtin_functions = {
     "apply": apply,
     "eval": eval,
     "not": not_,
+    "any": any_,
+    "all": all_,
 }
 
 
