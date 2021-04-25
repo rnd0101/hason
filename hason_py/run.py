@@ -10,7 +10,7 @@ from collections import ChainMap
 def println(data, env):
     the_print = env["_print"]
     for d in data:
-        the_print(eval(d, env), end="")
+        the_print(_eval(d, env), end="")
     the_print()
 
 
@@ -19,22 +19,30 @@ def lit(data, env):
 
 
 def serialize(data, env):
-    return env["_json_dumps"](eval(data[0], env))
+    return env["_json_dumps"](_eval(data[0], env))
 
 
 def deserialize(data, env):
-    return env["_json_loads"](eval(data[0], env))
+    return env["_json_loads"](_eval(data[0], env))
 
 
 def plus(data, env):
-    return sum(eval(d, env) for d in data)
+    return sum(_eval(d, env) for d in data)
+
+
+def not_(data, env):
+    return not _eval(data[0], env)
 
 
 def apply(data, env):
     func, *params = data
-    func = env["eval"](func, env)
+    func = _eval(func, env)
     # print(func, params)
     return func(params, env)
+
+
+def _eval(data, env):
+    return env["eval"](data, env)
 
 
 def eval(data, env):
@@ -56,6 +64,7 @@ builtin_functions = {
     "+": plus,
     "apply": apply,
     "eval": eval,
+    "not": not_,
 }
 
 
@@ -66,7 +75,7 @@ def interpret_main(data, env):
     if func_body is None:
         return data  # ???
     new_env = ChainMap(data, env)
-    return eval(func_body, new_env)
+    return _eval(func_body, new_env)
 
 
 def main(contents):
