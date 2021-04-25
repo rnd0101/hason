@@ -2,6 +2,8 @@
 
 ## Examples
 
+Function is represented by an object with a `""` key,
+which contains a list where the first element represents names for arguments.
 Lambda-calculus:
 
 ```
