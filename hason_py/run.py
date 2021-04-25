@@ -15,15 +15,19 @@ def println(data, env):
 
 
 def lit(data, env):
-    return data
+    return data[0]
 
 
 def serialize(data, env):
-    return env["_json_dumps"](data[0])
+    return env["_json_dumps"](eval(data[0], env))
 
 
 def deserialize(data, env):
-    return env["_json_loads"](data[0])
+    return env["_json_loads"](eval(data[0], env))
+
+
+def plus(data, env):
+    return sum(eval(d, env) for d in data)
 
 
 builtin_functions = {
@@ -34,12 +38,14 @@ builtin_functions = {
     "_json_dumps": json.dumps,
     "deserialize": deserialize,
     "serialize": serialize,
+    "+": plus,
 }
 
 
 def apply(func, params, env):
-    func = eval(func, env)   # env.get(data[0])
-    if func is not None:
+    func = eval(func, env)
+    if True or func is not None:
+        # print(func, params)
         return func(params, env)
     return [func] + params
 
@@ -48,7 +54,7 @@ def eval(data, env):
     if isinstance(data, list):
         return apply(data[0], data[1:], env)
     if isinstance(data, str):
-        return env.get(data)   # data from variable
+        return env.get(data)  # data from variable
     return data
 
 
@@ -57,7 +63,7 @@ def interpret_main(data, env):
         return data
     func_body = data.get("")
     if func_body is None:
-        return data   #???
+        return data  # ???
     new_env = ChainMap(data, env)
     return eval(func_body, new_env)
 
