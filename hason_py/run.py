@@ -44,10 +44,8 @@ builtin_functions = {
 
 def apply(func, params, env):
     func = eval(func, env)
-    if True or func is not None:
-        # print(func, params)
-        return func(params, env)
-    return [func] + params
+    # print(func, params)
+    return func(params, env)
 
 
 def eval(data, env):
@@ -68,11 +66,8 @@ def interpret_main(data, env):
     return eval(func_body, new_env)
 
 
-def main(filename):
-    with open(filename, 'rb') as json_file:
-        contents = json.load(json_file)
-    result = interpret_main(contents, builtin_functions)
-    print(json.dumps(result, indent=2))
+def main(contents):
+    return interpret_main(contents, builtin_functions)
 
 
 if __name__ == '__main__':
@@ -81,4 +76,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="__doc__")
     parser.add_argument('infile', nargs='?', type=str, default=sys.stdin)
     args = parser.parse_args()
-    main(args.infile)
+    with open(args.infile, 'rb') as json_file:
+        result = main(json.load(json_file))
+        print(json.dumps(result, indent=2))
