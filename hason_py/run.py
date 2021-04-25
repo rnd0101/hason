@@ -27,8 +27,6 @@ def deserialize(data, env):
 
 
 def plus(data, env):
-    print("+", data)
-    print("+2", [_eval(d, env) for d in data])
     return sum(_eval(d, env) for d in data)
 
 
@@ -46,15 +44,11 @@ def all_(data, env):
 
 def apply(data, env):
     func, *params = data
-    print("A:", data, env)
     func_def = _eval(func, env)
     new_env = env
     if isinstance(func_def, dict):
         args = {k: v for (k, v) in zip(func_def[""][0], params)}
         new_env = ChainMap(args, env)
-        if args == {'x': 'g1'}:
-            pass
-        print("A CH", args)
         func_to_call = lambda d, e: _eval([_eval(dd, new_env) for dd in func_def[""][1:]], new_env)
     else:
         func_to_call = func_def
@@ -62,14 +56,11 @@ def apply(data, env):
         result = func_to_call(params, new_env)
     else:
         result = func_to_call
-    print("A=", result)
     return result
 
 
 def _eval(data, env):
-    print("E", data)
     result = env["eval"](data, env)
-    print("E RET", result)
     return result
 
 
