@@ -30,6 +30,21 @@ def plus(data, env):
     return sum(eval(d, env) for d in data)
 
 
+def apply(data, env):
+    func, *params = data
+    func = env["eval"](func, env)
+    # print(func, params)
+    return func(params, env)
+
+
+def eval(data, env):
+    if isinstance(data, list):
+        return env["apply"](data, env)
+    if isinstance(data, str):
+        return env.get(data)  # data from variable
+    return data
+
+
 builtin_functions = {
     "lit": lit,
     "print": println,
@@ -39,21 +54,9 @@ builtin_functions = {
     "deserialize": deserialize,
     "serialize": serialize,
     "+": plus,
+    "apply": apply,
+    "eval": eval,
 }
-
-
-def apply(func, params, env):
-    func = eval(func, env)
-    # print(func, params)
-    return func(params, env)
-
-
-def eval(data, env):
-    if isinstance(data, list):
-        return apply(data[0], data[1:], env)
-    if isinstance(data, str):
-        return env.get(data)  # data from variable
-    return data
 
 
 def interpret_main(data, env):
