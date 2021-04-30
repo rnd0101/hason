@@ -44,12 +44,18 @@ def all_(data, env):
 
 def apply(data, env):
     func, *params = data
+    print(f"{func} {params}")
     func_def = _eval(func, env)
     new_env = env
     if isinstance(func_def, dict):
-        args = {k: v for (k, v) in zip(func_def[""][0], params)}
-        new_env = ChainMap(args, env)
-        func_to_call = lambda d, e: _eval([_eval(dd, new_env) for dd in func_def[""][1:]], new_env)
+        if len(func_def[""][0]) == 1 and len(params) == 0:
+            func_to_call = func_def
+        else:
+            if len(func_def[""][0]) > len(params):
+                print("!!!!", func_def[""][0], params)
+            args = {k: v for (k, v) in zip(func_def[""][0], params)}
+            new_env = ChainMap(args, env)
+            func_to_call = lambda d, e: _eval([_eval(dd, new_env) for dd in func_def[""][1:]], new_env)
     else:
         func_to_call = func_def
     if callable(func_to_call):
