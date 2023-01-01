@@ -34,6 +34,10 @@ def not_(data, env):
     return not _eval(data[0], env)
 
 
+def type_(data, env):
+    return type(_eval(data[0], env)).__name__
+
+
 def any_(data, env):
     return any(_eval(d, env) for d in data)
 
@@ -78,9 +82,16 @@ def eval(data, env):
     return data
 
 
+def lambda_(data, env):
+    return {
+        "": [data[0], _eval(data[1], env)]
+    }
+
+
 builtin_functions = {
     "lit": lit,
     "print": println,
+    "type": type_,
     "_print": print,
     "_json_loads": json.loads,
     "_json_dumps": json.dumps,
@@ -89,6 +100,7 @@ builtin_functions = {
     "+": plus,
     "apply": apply,
     "eval": eval,
+    "lambda": lambda_,
     "not": not_,
     "any": any_,
     "all": all_,
